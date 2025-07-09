@@ -1,19 +1,21 @@
 export default function handler(req, res) {
   if (req.method === 'GET') {
-    const VERIFY_TOKEN = 'mathbot_verify_f798920f';
+    const VERIFY_TOKEN = "mathbot_token"; // <-- აქ ჩასვით თქვენი Meta verify token
+    
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
-    if (mode && token && mode === 'subscribe' && token === VERIFY_TOKEN) {
+    if (mode && token === VERIFY_TOKEN) {
       res.status(200).send(challenge);
     } else {
-      res.sendStatus(403);
+      res.status(403).send('Forbidden');
     }
   } else if (req.method === 'POST') {
-    console.log('Received webhook:', req.body);
-    res.sendStatus(200);
+    console.log('POST Webhook received:', req.body);
+    res.status(200).send('EVENT_RECEIVED');
   } else {
-    res.sendStatus(405);
+    res.setHeader('Allow', ['GET', 'POST']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
