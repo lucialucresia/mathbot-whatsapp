@@ -1,7 +1,7 @@
 export default function handler(req, res) {
+  const VERIFY_TOKEN = "mathbot_token";
+
   if (req.method === 'GET') {
-    const VERIFY_TOKEN = "mathbot_token"; // <-- აქ ჩასვით თქვენი Meta verify token
-    
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
@@ -12,7 +12,13 @@ export default function handler(req, res) {
       res.status(403).send('Forbidden');
     }
   } else if (req.method === 'POST') {
-    console.log('POST Webhook received:', req.body);
+    const body = req.body;
+
+    // დაამატე ეს ლოგიკა:
+    if (body.object === 'whatsapp_business_account') {
+      console.log('📩 WhatsApp Message Received:', JSON.stringify(body, null, 2));
+    }
+
     res.status(200).send('EVENT_RECEIVED');
   } else {
     res.setHeader('Allow', ['GET', 'POST']);
